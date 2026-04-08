@@ -16,7 +16,7 @@ export default defineConfig({
     actionTimeout: 15000,
     screenshot: 'only-on-failure',
     trace: 'on-first-retry',
-    headless: false,
+    headless: !process.env.CI ? false : true,
     viewport: { width: 1280, height: 720 },
   },
   projects: [

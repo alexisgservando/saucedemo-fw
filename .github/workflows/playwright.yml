@@ -22,6 +22,8 @@ jobs:
         with:
           node-version: '22'
           cache: 'npm'
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
       # Step 3 — Install dependencies
       - name: Install dependencies
@@ -37,6 +39,7 @@ jobs:
         env:
           CI: true
           LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 0
 
       # Step 6 — Upload HTML report
       - name: Upload HTML report
