@@ -1,4 +1,5 @@
 import * as dotenv from 'dotenv';
+import { TC_TO_LINEAR, QASE_TO_TC } from './test-data';
 
 dotenv.config();
 
@@ -16,28 +17,6 @@ if (!QASE_TOKEN) {
     console.error('❌ QASE_TESTOPS_API_TOKEN not found in .env file');
     process.exit(1);
 }
-
-// Qase case ID → TC ID mapping
-const QASE_TO_TC: Record<number, string> = {
-    1: 'TC-001',
-    2: 'TC-002',
-    3: 'TC-003',
-    4: 'TC-004',
-    5: 'TC-005',
-    6: 'TC-006',
-    7: 'TC-007',
-};
-
-// TC ID → Linear issue mapping
-const TC_TO_LINEAR: Record<string, string[]> = {
-    'TC-001': ['SAU-7'],
-    'TC-002': ['SAU-8'],
-    'TC-003': ['SAU-8'],
-    'TC-004': ['SAU-8'],
-    'TC-005': ['SAU-9'],
-    'TC-006': ['SAU-10'],
-    'TC-007': ['SAU-11'],
-};
 
 // Fetch the latest Qase test run
 async function fetchLatestRun(): Promise<{

@@ -9,6 +9,7 @@ import type {
 import fs from 'fs';
 import path from 'path';
 import { getNextRunFolder, setCurrentRunFolder } from './run-counter';
+import { LINEAR_ISSUES } from './test-data';
 
 
 class LinearReporter implements Reporter {
@@ -18,20 +19,20 @@ class LinearReporter implements Reporter {
     private startTime: Date = new Date();
 
     onBegin(config: FullConfig, suite: Suite): void {
-    if (this.initialized) return;
-    this.initialized = true;
+        if (this.initialized) return;
+        this.initialized = true;
 
-    this.runFolder = getNextRunFolder();
-    this.startTime = new Date();
+        this.runFolder = getNextRunFolder();
+        this.startTime = new Date();
 
-    fs.mkdirSync(path.join(this.runFolder, 'screenshots'), { recursive: true });
+        fs.mkdirSync(path.join(this.runFolder, 'screenshots'), { recursive: true });
 
-    setCurrentRunFolder(this.runFolder);
-    process.env.RUN_FOLDER = this.runFolder;
+        setCurrentRunFolder(this.runFolder);
+        process.env.RUN_FOLDER = this.runFolder;
 
-    console.log(`\n📁 Evidence folder: ${this.runFolder}`);
-    console.log(`🚀 Running ${suite.allTests().length} tests...\n`);
-}
+        console.log(`\n📁 Evidence folder: ${this.runFolder}`);
+        console.log(`🚀 Running ${suite.allTests().length} tests...\n`);
+    }
 
     onTestEnd(test: TestCase, result: TestResult): void {
         const status = result.status === 'passed' ? '✅' : '❌';
@@ -85,11 +86,9 @@ class LinearReporter implements Reporter {
         lines.push(``);
         lines.push(`| Issue | Title | Test Cases |`);
         lines.push(`|-------|-------|------------|`);
-        lines.push(`| SAU-7 | User can log in with valid credentials | TC-001 |`);
-        lines.push(`| SAU-8 | User cannot log in with invalid credentials | TC-002, TC-003, TC-004 |`);
-        lines.push(`| SAU-9 | Locked out user cannot access the application | TC-005 |`);
-        lines.push(`| SAU-10 | User can add a product to the cart | TC-006 |`);
-        lines.push(`| SAU-11 | User can complete the checkout process | TC-007 |`);
+        for (const issue of LINEAR_ISSUES) {
+            lines.push(`| ${issue.id} | ${issue.title} | ${issue.tcs.join(', ')} |`);
+        }
         lines.push(``);
         lines.push(`## Evidence`);
         lines.push(``);
