@@ -1,16 +1,25 @@
 {
   "name": "saucedemo-fw",
   "version": "1.0.0",
-  "description": "",
+  "description": "Next-gen Playwright + TypeScript QA framework with Claude AI and Linear integration",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "test": "playwright test --project=chromium",
+    "test:all": "playwright test",
+    "test:headed": "playwright test --project=chromium --headed",
+    "test:qase": "QASE_MODE=testops QASE_TESTOPS_API_TOKEN=$(grep QASE_TESTOPS_API_TOKEN .env | cut -d '=' -f2) playwright test --project=chromium",
+    "report": "playwright show-report",
+    "generate:artifacts": "ts-node src/utils/generate-test-artifacts.ts",
+    "notify:linear": "ts-node src/utils/notify-linear.ts"
+  },
   "keywords": [],
-  "author": "",
+  "author": "Alexis Guardado",
   "license": "ISC",
   "devDependencies": {
     "@playwright/test": "^1.59.1",
     "@types/node": "^25.5.0",
     "dotenv": "^17.4.1",
+    "playwright-qase-reporter": "^2.2.3",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.2"
   }

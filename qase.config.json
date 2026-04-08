@@ -1,0 +1,12 @@
+{
+  "testops": {
+    "api": {
+      "token": ""
+    },
+    "project": "STA",
+    "run": {
+      "complete": true
+    },
+    "uploadAttachments": true
+  }
+}
