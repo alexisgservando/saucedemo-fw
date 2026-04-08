@@ -10,40 +10,29 @@ jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
-      # Step 1 — Check out the code
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Step 2 — Set up Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: 'npm'
-        env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
-      # Step 3 — Install dependencies
       - name: Install dependencies
         run: npm ci
 
-      # Step 4 — Install Playwright browsers (Chromium only)
       - name: Install Playwright browsers
         run: npx playwright install chromium --with-deps
 
-      # Step 5 — Run tests
       - name: Run Playwright tests
         run: npx playwright test --project=chromium
         env:
           CI: true
           LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
-          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 0
 
-      # Step 6 — Upload HTML report
       - name: Upload HTML report
         uses: actions/upload-artifact@v4
         if: always()
@@ -52,7 +41,6 @@ jobs:
           path: playwright-report/
           retention-days: 30
 
-      # Step 7 — Upload evidence folder
       - name: Upload evidence
         uses: actions/upload-artifact@v4
         if: always()
