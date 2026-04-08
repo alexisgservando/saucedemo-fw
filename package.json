@@ -10,7 +10,8 @@
     "test:qase": "QASE_MODE=testops QASE_TESTOPS_API_TOKEN=$(grep QASE_TESTOPS_API_TOKEN .env | cut -d '=' -f2) playwright test --project=chromium",
     "report": "playwright show-report",
     "generate:artifacts": "ts-node src/utils/generate-test-artifacts.ts",
-    "notify:linear": "ts-node src/utils/notify-linear.ts"
+    "notify:linear": "ts-node src/utils/notify-linear.ts",
+    "report:qase": "QASE_TESTOPS_API_TOKEN=$(grep QASE_TESTOPS_API_TOKEN .env | cut -d '=' -f2) ts-node src/utils/report-qase.ts"
   },
   "keywords": [],
   "author": "Alexis Guardado",
