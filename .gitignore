@@ -9,4 +9,5 @@ node_modules/
 .env
 .run-state/
 dist/
-evidence/
+evidence/.claude-temp/
+qubika-agentic-framework/
