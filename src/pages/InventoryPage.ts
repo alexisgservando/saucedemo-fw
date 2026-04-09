@@ -39,4 +39,20 @@ export class InventoryPage extends BasePage {
     async getProductCount(): Promise<number> {
         return await this.productItems.count();
     }
+
+    async sortBy(option: 'az' | 'za' | 'lohi' | 'hilo'): Promise<void> {
+        await this.takeScreenshot('11-sort-dropdown-opened');
+        await this.page.selectOption('[data-test="product-sort-container"]', option);
+        await this.takeScreenshot('12-products-sorted');
+    }
+
+    async getProductPrices(): Promise<number[]> {
+        const priceElements = await this.page.locator('.inventory_item_price').all();
+        const prices: number[] = [];
+        for (const el of priceElements) {
+            const text = await el.innerText();
+            prices.push(parseFloat(text.replace('$', '')));
+        }
+        return prices;
+    }
 }

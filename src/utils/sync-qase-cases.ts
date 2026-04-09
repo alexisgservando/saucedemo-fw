@@ -1,12 +1,12 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as dotenv from 'dotenv';
-import { LINEAR_ISSUES, QASE_TO_TC } from './test-data';
+import { LINEAR_ISSUES, QASE_TO_TC, TC_TO_LINEAR } from './test-data';
 
 dotenv.config();
 
-const TOKEN        = process.env.QASE_TESTOPS_API_TOKEN;
-const QASE_API     = 'https://api.qase.io/v1';
+const TOKEN = process.env.QASE_TESTOPS_API_TOKEN;
+const QASE_API = 'https://api.qase.io/v1';
 const QASE_PROJECT = 'STA';
 const TEST_DATA_PATH = path.join(__dirname, 'test-data.ts');
 
@@ -17,11 +17,12 @@ if (!TOKEN) {
 
 // Suite ID mapping — matches Qase project STA
 const SUITE_MAP: Record<string, number> = {
-  'SAU-7':  1, // Login
-  'SAU-8':  1, // Login
-  'SAU-9':  1, // Login
+  'SAU-7': 1, // Login
+  'SAU-8': 1, // Login
+  'SAU-9': 1, // Login
   'SAU-10': 2, // Inventory
   'SAU-11': 3, // Checkout
+  'SAU-48': 2, // Inventory
 };
 
 // TC → suite ID lookup
@@ -61,7 +62,7 @@ function updateTestDataFile(qaseId: number, tcId: string): void {
 
   // Insert new entry before closing brace
   const newEntry = `  ${qaseId}: '${tcId}',\n`;
-  const updated  = content.slice(0, closingBrace) + newEntry + content.slice(closingBrace);
+  const updated = content.slice(0, closingBrace) + newEntry + content.slice(closingBrace);
 
   fs.writeFileSync(TEST_DATA_PATH, updated, 'utf-8');
   console.log(`   ✅ Updated QASE_TO_TC in test-data.ts: ${qaseId} → ${tcId}`);
@@ -102,7 +103,7 @@ async function createCase(title: string, suiteId: number): Promise<number> {
       body: JSON.stringify({
         title,
         suite_id: suiteId,
-        type:     2, // functional
+        type: 2, // functional
         priority: 2, // medium
       }),
     }
@@ -129,7 +130,9 @@ function buildTitle(tc: string): string {
 async function main(): Promise<void> {
   console.log('\n🚀 Syncing test cases to Qase...\n');
 
-  const allTCs = Object.values(QASE_TO_TC);
+  // Use TC_TO_LINEAR as source of truth for all known TCs
+  // QASE_TO_TC only tracks what's already been synced
+  const allTCs = Object.keys(TC_TO_LINEAR);
 
   process.stdout.write('⏳ Fetching existing Qase cases...');
   const existing = await fetchExistingCases();
@@ -141,13 +144,13 @@ async function main(): Promise<void> {
   const skipped: Array<{ tc: string; qaseId: number }> = [];
 
   for (const tc of allTCs) {
-    const existingId = Object.entries(QASE_TO_TC).find(([, v]) => v === tc)?.[0];
-    if (existingId && existingQaseIds.has(Number(existingId))) {
-      skipped.push({ tc, qaseId: Number(existingId) });
+    const existingEntry = Object.entries(QASE_TO_TC).find(([, v]) => v === tc);
+    if (existingEntry) {
+      skipped.push({ tc, qaseId: Number(existingEntry[0]) });
       continue;
     }
 
-    const title   = buildTitle(tc);
+    const title = buildTitle(tc);
     const suiteId = getSuiteId(tc);
 
     process.stdout.write(`⏳ Creating ${tc} in Qase...`);
