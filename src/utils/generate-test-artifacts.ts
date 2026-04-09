@@ -14,9 +14,9 @@ if (!API_KEY) {
 
 // The 5 issues we want to generate .md files for
 const ISSUES = [
-  { id: 'SAU-7',  file: 'SAU-07-test-cases.md' },
-  { id: 'SAU-8',  file: 'SAU-08-test-cases.md' },
-  { id: 'SAU-9',  file: 'SAU-09-test-cases.md' },
+  { id: 'SAU-7', file: 'SAU-07-test-cases.md' },
+  { id: 'SAU-8', file: 'SAU-08-test-cases.md' },
+  { id: 'SAU-9', file: 'SAU-09-test-cases.md' },
   { id: 'SAU-10', file: 'SAU-10-test-cases.md' },
   { id: 'SAU-11', file: 'SAU-11-test-cases.md' },
 ];
@@ -62,7 +62,7 @@ async function fetchIssue(issueId: string): Promise<any> {
 
 // Generate markdown content from issue data
 function generateMarkdown(issue: any): string {
-  const comments = issue.comments.nodes as Array<{body: string; createdAt: string}>;
+  const comments = issue.comments.nodes as Array<{ body: string; createdAt: string }>;
 
   // Separate test cases, execution history and other comments
   const testCaseComments = comments.filter((c: any) =>
@@ -89,10 +89,10 @@ function generateMarkdown(issue: any): string {
   let historyRows = '';
   const sortedExec = [...executionComments].reverse();
   for (const c of sortedExec) {
-    const date   = c.createdAt.split('T')[0];
-    const type   = c.body.includes('MANUAL') ? 'Manual'
-                 : c.body.includes('REGRESSION') ? 'Regression'
-                 : 'Automated';
+    const date = c.createdAt.split('T')[0];
+    const type = c.body.includes('MANUAL') ? 'Manual'
+      : c.body.includes('REGRESSION') ? 'Regression'
+        : 'Automated';
     const result = c.body.includes('PASSED') ? '✅ PASSED' : '❌ FAILED';
     historyRows += `| ${date} | ${type} | ${result} | Playwright / Alexis Guardado |\n`;
   }
@@ -139,13 +139,15 @@ function generateMarkdown(issue: any): string {
 // Main function
 async function main(): Promise<void> {
   console.log('\n🚀 Generating test artifact .md files from Linear...\n');
+  console.log('⚠️  Reminder: run /tc-notify-linear before this script to ensure');
+  console.log('   .md files capture the latest test results from Linear.\n');
 
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 
   for (const { id, file } of ISSUES) {
     try {
       process.stdout.write(`⏳ Fetching ${id}...`);
-      const issue    = await fetchIssue(id);
+      const issue = await fetchIssue(id);
       const markdown = generateMarkdown(issue);
       const filePath = path.join(OUTPUT_DIR, file);
 

@@ -24,3 +24,14 @@ Regenerate all .md test case files from Linear issues.
 ## Notes
 - Reads from Linear API using LINEAR_API_KEY in .env
 - Run whenever Linear issues are updated
+
+## ⚠️ Ordering dependency
+Always run /tc-notify-linear BEFORE this skill.
+
+/tc-generate-artifacts reads Linear comments to build execution history in the .md files.
+If /tc-notify-linear has not posted the latest results yet, the .md files will contain stale data.
+
+Correct order:
+/tc-run → /tc-report-qase → /tc-notify-linear → /tc-generate-artifacts
+
+Use /tc-full-cycle to enforce this order automatically.

@@ -51,6 +51,9 @@ Each step depends on the previous:
 - /tc-notify-linear requires a Qase run from /tc-report-qase
 - /tc-generate-artifacts requires Linear to be updated by /tc-notify-linear
 
+⚠️ Never run /tc-generate-artifacts before /tc-notify-linear — the .md files
+will contain stale execution history if Linear has not been updated yet.
+
 Use /tc-full-cycle to run all 4 steps automatically in the correct order.
 
 ## Qase Reporting Paths
