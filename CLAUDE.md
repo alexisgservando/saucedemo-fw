@@ -40,3 +40,28 @@ Skills are registered in `.claude/skills/` and available as slash commands.
 | `/tc-notify-linear` | "notify Linear" | Post results to Linear issues |
 | `/tc-generate-artifacts` | "generate artifacts" | Regenerate .md files from Linear |
 | `/tc-full-cycle` | "run everything" | Tests + evidence + Linear in one command |
+
+## Workflow Dependencies
+
+The correct execution order for a full QA cycle is:
+/tc-run → /tc-report-qase → /tc-notify-linear → /tc-generate-artifacts
+
+Each step depends on the previous:
+- /tc-report-qase requires evidence from /tc-run
+- /tc-notify-linear requires a Qase run from /tc-report-qase
+- /tc-generate-artifacts requires Linear to be updated by /tc-notify-linear
+
+Use /tc-full-cycle to run all 4 steps automatically in the correct order.
+
+## Qase Reporting Paths
+
+There are two ways results reach Qase — use only ONE per test execution:
+
+| Path | When to use |
+|------|------------|
+| `npm run test:qase` or CI pipeline | Tests running with QASE_MODE=testops active |
+| `/tc-report-qase` | Tests ran WITHOUT QASE_MODE=testops (e.g. plain /tc-run) |
+
+⚠️ Running both paths for the same execution creates duplicate Qase runs.
+
+/tc-full-cycle uses /tc-report-qase (not QASE_MODE=testops) — do not combine with npm run test:qase.
