@@ -2,7 +2,7 @@
 
 **Linear:** https://linear.app/saucedemo-qa/issue/SAU-48/user-can-sort-products-by-price
 **Project:** SauceDemo Test Automation
-**Status:** Backlog
+**Status:** Done
 
 ---
 
@@ -29,6 +29,42 @@ Notes for implementation:
 ---
 
 ## Test Cases
+
+✅ COMPLETED — April 9, 2026
+
+Full E2E QA workflow executed successfully for SAU-48. This was the first test of the updated workflow.
+
+**What was built:**
+
+`src/pages/InventoryPage.ts`:
+- Added `sortBy(option)` method — selects sort option from dropdown with screenshots
+- Added `getProductPrices()` method — reads all product prices as numbers
+
+`src/tests/inventory.spec.ts`:
+- Added TC-008 with `qase.id(8)` annotation
+- Asserts prices are in ascending order after sorting
+
+`src/utils/test-data.ts`:
+- Added TC-008 to TC_TO_LINEAR, LINEAR_ISSUES
+- QASE_TO_TC auto-updated by /tc-sync-qase
+
+`src/utils/generate-test-artifacts.ts`:
+- Added SAU-48 to ISSUES array
+- SAU-48-test-cases.md generated
+
+**Updated E2E workflow validated:**
+
+Phase 1 — Requirement ✅ SAU-48 existed in Linear with AC
+Phase 2 — Test case ✅ TC-008 generated, posted to Linear, Qase case STA-8 created via /tc-sync-qase, QASE_TO_TC auto-updated
+Phase 3 — Execution ✅ 8/8 tests passed in 10.6s, evidence in run-3
+Phase 4 — Qase ✅ Run #17 created via /tc-report-qase
+Phase 5 — Linear ✅ SAU-48 notified with TC-008 results via /tc-notify-linear
+Phase 6 — Docs ✅ SAU-48-test-cases.md generated via /tc-generate-artifacts
+
+**Qase:** https://app.qase.io/run/STA/dashboard/17
+**GitHub commit:** feat: add TC-008 — sort products by price (SAU-48)
+
+---
 
 TC-008 — User can sort products by price (low to high)
 
@@ -61,6 +97,7 @@ TC-008 — User can sort products by price (low to high)
 | Date | Type | Result | Executed by |
 |------|------|--------|-------------|
 | 2026-04-09 | Automated | ✅ PASSED | Playwright / Alexis Guardado |
+| 2026-04-10 | Automated | ✅ PASSED | Playwright / Alexis Guardado |
 
 ---
 
@@ -69,4 +106,4 @@ TC-008 — User can sort products by price (low to high)
 Screenshots per step stored in:
 `test-results/YYYY-MM-DD/run-{timestamp}/screenshots/`
 
-_Generated automatically on 2026-04-09_
+_Generated automatically on 2026-04-10_
