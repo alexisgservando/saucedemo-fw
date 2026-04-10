@@ -1,28 +1,23 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as dotenv from 'dotenv';
+import { QASE_TO_TC } from './test-data';
 
 dotenv.config();
 
-const QASE_TOKEN   = process.env.QASE_TESTOPS_API_TOKEN;
+const QASE_TOKEN = process.env.QASE_TESTOPS_API_TOKEN;
 const QASE_PROJECT = 'STA';
-const QASE_API     = 'https://api.qase.io/v1';
+const QASE_API = 'https://api.qase.io/v1';
 
 if (!QASE_TOKEN) {
   console.error('❌ QASE_TESTOPS_API_TOKEN not found in .env file');
   process.exit(1);
 }
 
-// TC ID → Qase case ID mapping
-const TC_TO_QASE: Record<string, number> = {
-  'TC-001': 1,
-  'TC-002': 2,
-  'TC-003': 3,
-  'TC-004': 4,
-  'TC-005': 5,
-  'TC-006': 6,
-  'TC-007': 7,
-};
+// TC ID → Qase case ID mapping — sourced from test-data.ts (single source of truth)
+const TC_TO_QASE: Record<string, number> = Object.fromEntries(
+  Object.entries(QASE_TO_TC).map(([qaseId, tcId]) => [tcId, Number(qaseId)])
+);
 
 // Find the latest evidence run folder
 function findLatestRun(): string | null {
@@ -63,14 +58,14 @@ function parseSummary(runFolder: string): Array<{
     if (line.includes('---')) continue;
     const cells = line.split('|').map(c => c.trim()).filter(c => c.length > 0);
     if (cells.length >= 3 && cells[0].match(/^TC-\d+/)) {
-      const tcId     = cells[0].match(/^(TC-\d+)/)?.[1] || '';
+      const tcId = cells[0].match(/^(TC-\d+)/)?.[1] || '';
       const isPassed = cells[1].includes('passed') || cells[1].includes('✅');
-      const durStr   = cells[2].replace('s', '');
+      const durStr = cells[2].replace('s', '');
       const duration = Math.round(parseFloat(durStr) * 1000); // ms
       if (tcId) {
         results.push({
-          tc:       tcId,
-          status:   isPassed ? 'passed' : 'failed',
+          tc: tcId,
+          status: isPassed ? 'passed' : 'failed',
           duration,
         });
       }
@@ -157,12 +152,12 @@ async function main(): Promise<void> {
     .filter(r => TC_TO_QASE[r.tc] !== undefined)
     .map(r => ({
       case_id: TC_TO_QASE[r.tc],
-      status:  r.status,
+      status: r.status,
       time_ms: r.duration,
     }));
 
-  const caseIds  = qaseResults.map(r => r.case_id);
-  const date     = new Date().toISOString().split('T')[0];
+  const caseIds = qaseResults.map(r => r.case_id);
+  const date = new Date().toISOString().split('T')[0];
   const runTitle = `Manual report — ${date}`;
 
   // Create run → post results → complete run
