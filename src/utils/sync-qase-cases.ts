@@ -138,7 +138,8 @@ async function main(): Promise<void> {
   const existing = await fetchExistingCases();
   console.log(` ✅ Found ${existing.size} existing cases`);
 
-  const existingQaseIds = new Set(Object.keys(QASE_TO_TC).map(Number));
+  // Set of case IDs that actually exist in Qase (from API)
+  const existingCaseIds = new Set(Array.from(existing.values()));
 
   const created: Array<{ tc: string; qaseId: number; title: string }> = [];
   const skipped: Array<{ tc: string; qaseId: number }> = [];
@@ -146,8 +147,14 @@ async function main(): Promise<void> {
   for (const tc of allTCs) {
     const existingEntry = Object.entries(QASE_TO_TC).find(([, v]) => v === tc);
     if (existingEntry) {
-      skipped.push({ tc, qaseId: Number(existingEntry[0]) });
-      continue;
+      const qaseId = Number(existingEntry[0]);
+      // Verify the case actually exists in Qase — not just in test-data.ts
+      if (existingCaseIds.has(qaseId)) {
+        skipped.push({ tc, qaseId });
+        continue;
+      }
+      // ID exists in test-data.ts but NOT in Qase — treat as missing
+      console.log(`   ⚠️  ${tc} has Qase ID ${qaseId} in test-data.ts but not found in Qase — recreating`);
     }
 
     const title = buildTitle(tc);
